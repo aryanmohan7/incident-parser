@@ -2,6 +2,7 @@ import json
 import re
 from pydantic import BaseModel, ValidationError
 from typing import Dict, Any, Optional
+from groq_client import call_groq_api_structured
 
 # Define Pydantic model for validation
 class Incident(BaseModel):
@@ -97,10 +98,10 @@ def parse_and_validate(raw_response: str) -> Dict[str, Any]:
     except Exception as e:
         return {"error": f"Unexpected error: {str(e)}", "raw_response": raw_response}
 
-def extract_incident_data(text: str, api_call_func) -> Dict[str, Any]:
-    """Main function to extract and validate incident data."""
+def extract_incident_data(text: str, api_call_func=None) -> Dict[str, Any]:
+    """Extract incident data using structured output formatter."""
     if not text or not text.strip():
         return {"error": "Input text is empty"}
     
-    raw_response = api_call_func(text)
-    return parse_and_validate(raw_response)
+    # Use structured parser directly
+    return call_groq_api_structured(text)
